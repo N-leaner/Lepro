@@ -63,3 +63,9 @@ get '/details/:post_id' do
 		erb :details
 	end	
 end
+
+post '/details/:post_id' do
+	comment = params[:comment].strip
+	post_id = params[:post_id]
+	erb "You type comment #{comment} for a post #{post_id}"
+end
