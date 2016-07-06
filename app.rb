@@ -51,7 +51,10 @@ post '/new' do
 end
 
 get '/details/:post_id' do
+	#получаем переменную из url-a
 	post_id = params[:post_id]
+
+	#получаем пост
 	result = @db.execute 'select * from Posts where id = ?',[post_id]
 	if result.empty?
 		redirect to '/'
