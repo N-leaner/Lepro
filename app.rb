@@ -13,7 +13,7 @@ before do
 	init_db
 end
 
-configure do
+def create_tables
 	init_db
 	@db.execute 'CREATE TABLE IF NOT EXISTS Posts 
 	(
@@ -30,6 +30,10 @@ configure do
 	created_date DATETIME, 
 	comment TEXT
 	)'
+end	
+
+configure do
+	create_tables
 end	
 
 get '/' do
@@ -121,4 +125,21 @@ post '/details/:post_id' do
 
 		redirect to '/details/'+post_id
 	end	
+end
+
+post '/clear' do
+	@command = params[:command].strip
+	if @command == ''
+		@error = "Please, put some command to CONFIRM"						
+	else
+		if @command == 'delete'		
+			@result = @db.execute 'DROP TABLE IF EXISTS Comments'
+			@result = @db.execute 'DROP TABLE IF EXISTS Posts'
+			create_tables
+			return redirect to '/'
+		else
+			@error = "Sorry, you type unknown command"
+		end	
+	end
+  erb :clear
 end
