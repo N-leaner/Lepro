@@ -75,5 +75,21 @@ end
 post '/details/:post_id' do
 	comment = params[:comment].strip
 	post_id = params[:post_id]
-	erb "You type comment #{comment} for a post #{post_id}"
+
+	if comment.length != 0
+		@db.execute "insert into Comments 
+		(
+			post_id, 
+			created_date, 
+			comment
+		) 
+		values 
+		(
+			?,
+			datetime('now','localtime'),
+			?
+		)",[post_id, comment]
+	end	
+	
+	redirect to '/details/'+post_id
 end
