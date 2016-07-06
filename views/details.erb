@@ -4,9 +4,24 @@
 	<br><br>
 	Added at <%= @row['created_date'] %>
 </p>
-<br>
+
 <hr>
-<h4>Comments:</h4>
+
+<%if @comments.size > 0 %>	
+	<blockquote>
+		<p>Comments:</p>
+		<% @comments.each do |comment| %>
+			<footer>
+			<strong><%= comment['comment'] %></strong>
+			<small>added <%= comment['created_date'] %></small>
+			<hr>
+			</footer>
+		<% end %>
+	</blockquote>
+	<hr>
+<%end%>
+  
+<h4>Add comments:</h4>
 <p>
 	<form action="/details/<%= @row['id'] %>" method="POST">
 		<textarea name="comment"class="form-control" rows="6" placeholder="type comment text here"></textarea>
