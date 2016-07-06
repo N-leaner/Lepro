@@ -47,6 +47,10 @@ get '/new' do
   erb :new
 end
 
+get '/cleardb' do
+  erb :clear
+end
+
 post '/new' do
   content = params[:content].strip
   @autor = params[:autor].strip.capitalize
