@@ -19,7 +19,8 @@ configure do
 	(
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
 	created_date DATETIME, 
-	content TEXT
+	content TEXT,
+	autor VARCHAR
 	)'
 
 	@db.execute 'CREATE TABLE IF NOT EXISTS Comments 
@@ -34,6 +35,7 @@ end
 get '/' do
 	#выбираем посты из бд:
 	@result = @db.execute 'select * from Posts order by id desc'
+	@c_comn = @db.execute 'select post_id, COUNT(*) as count from Comments group by post_id'
 	erb :index
 end
 
@@ -47,13 +49,28 @@ end
 
 post '/new' do
   content = params[:content].strip
+  @autor = params[:autor].strip.capitalize
+
+  if @autor.length == 0
+  	@error = "Please, type the damn autor name!"  	
+  	return erb :new
+  end
 
   if content.length == 0
   	@error = "Please, type the damn post text!"  	
   	return erb :new
   end	
 
-  @db.execute "insert into Posts (content, created_date) values (?,datetime('now','localtime'))",[content]
+  @db.execute "insert into Posts 
+  (
+  content, 
+  created_date, 
+  autor
+  ) values (
+  ?,
+  datetime('now','localtime'),
+  ?
+  )",[content,@autor]
   #перенаправление на главную
   redirect to '/'
 end
@@ -77,7 +94,14 @@ post '/details/:post_id' do
 	comment = params[:comment].strip
 	post_id = params[:post_id]
 
-	if comment.length != 0
+	result = @db.execute 'select * from Posts where id = ?',[post_id]
+	@row = result[0]
+	@comments = @db.execute 'select * from Comments where post_id = ? order by id',[post_id]
+
+	if comment.length == 0		
+		@error = "Please, puts some comment"				
+		erb :details
+	else
 		@db.execute "insert into Comments 
 		(
 			post_id, 
@@ -90,7 +114,7 @@ post '/details/:post_id' do
 			datetime('now','localtime'),
 			?
 		)",[post_id, comment]
+
+		redirect to '/details/'+post_id
 	end	
-	
-	redirect to '/details/'+post_id
 end

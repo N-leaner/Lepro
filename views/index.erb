@@ -5,9 +5,17 @@
 	<p>
 		<em><%=post['content'] %></em> 
 		<br><br>
-		Added at <%=post['created_date'] %>
+		Added at <%=post['created_date'] %>, autor '<%=post['autor'] %>'
 		<br>
-		<a href="/details/<%=post['id'] %>">Comments</a>
+
+		<% count=' 0' %>
+		<% @c_comn.each do |i_post| %>	
+			<% if i_post['post_id'] == post['id'] %>
+				<% count = ' '+i_post['count'].to_s %>	
+			<% end %>
+		<% end %>
+
+		<a href="/details/<%=post['id'] %>">Comments:<%=count%></a>
 	</p>
 	<hr>					
 <% end %>
